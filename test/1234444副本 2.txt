@@ -1,0 +1,93 @@
+123123123123'______�
+Private Const FILE_NAME_DEV = "UrlDataDev.sql"
+Private Const FILE_NAME_CHECK = "UrlDataCheck.sql"
+Private Const FILE_NAME_STAGE = "UrlDataStage.sql"
+Private Const FILE_NAME_RELEASE = "UrlDataRelease.sql"
+
+Public Sub doMakeSQL()
+    
+    rst = makeSQL(FILE_NAME_DEV, 0)
+    rst = makeSQL(FILE_NAME_CHECK, 1)
+    rst = makeSQL(FILE_NAME_STAGE, 2)
+    rst = makeSQL(FILE_NAME_RELEASE, 3)
+    
+    MsgBox "_______"��B"
+End Sub
+
+'----------------------------------------------------------------
+'__URL___SQL__SQLo�
+'----------------------------------------------------------------
+Public Function makeSQL(outfilename, offset)
+
+    '________��
+    rst = makeOutPutFolder()
+    
+    '_______pX
+    filePath = ThisWorkbook.Path & "\" & SQL_OUT_PATH & outfilename
+    
+    ' __________[v
+    Dim tw As Integer
+    tw = FreeFile
+    Open filePath For Output As #tw
+    
+    'SQL______�
+    rst = writeSQL(tw, offset)
+    
+    '_____[Y
+    Close tw
+    
+    ' ______[h
+    encodeFile (filePath)
+End Function
+
+
+'----------------------------------------------------------------
+'__URL___SQL______��
+'----------------------------------------------------------------
+
+Private Function writeSQL(tw, offset)
+
+    sheet = SHEET_URL
+
+    Print #tw, "DELETE FROM BRV_URL_MST;"
+
+        
+    '------------------------------------------------
+    'URL___X^
+    ins = "INSERT INTO BRV_URL_MST VALUES("
+    
+    posX = 3 + offset
+    
+    'ID
+    ins = sqlInt(ins, "1") + ","
+    '_____URLgURL
+    ins = sqlStrForCells(ins, sheet, 3, posX) + ","
+    '____URL�URL
+    ins = sqlStrForCells(ins, sheet, 4, posX) + ","
+    '_______URL�URL
+    ins = sqlStrForCells(ins, sheet, 5, posX) + ","
+    '____��
+    ins = sqlStrForCells(ins, sheet, 6, posX) + ","
+    '____________URL[hURL
+    ins = sqlStrForCells(ins, sheet, 7, posX) + ","
+    
+    '____URL�URL
+    ins = sqlStrForCells(ins, sheet, 8, posX) + ","
+    'twitterURL
+    ins = sqlStrForCells(ins, sheet, 9, posX) + ","
+    'facebookURL
+    ins = sqlStrForCells(ins, sheet, 10, posX) + ","
+    
+    '__�
+    ins = sqlInt(ins, "1") + ","
+    '__________^�
+    ins = ins + " now(),"
+    '__________V�
+    ins = ins + " now()"
+    
+    ins = ins + ");"
+    
+    Print #tw, ins
+
+    writeSQL = True
+End Function
